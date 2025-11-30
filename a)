@@ -1,173 +1,61 @@
-"""
-Analyse d'un circuit RC passe-haut
-Données expérimentales et modélisation théorique
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Données expérimentales du tableau
-freq = np.array([30, 60, 100, 300, 600, 1000, 3000, 6000, 10000, 30000])  # Hz
-ch1_Vg = np.array([7.32, 7.52, 7.52, 7.48, 7.4, 7.44, 7.44, 7.52, 7.44, 7.44])  # V
-ch2_Vr = np.array([0.44, 0.896, 1.46, 3.82, 5.68, 6.64, 7.24, 7.28, 7.36, 7.36])  # V
-rapport_amp = np.array([0.060, 0.119, 0.194, 0.511, 0.768, 0.892, 0.973, 0.968, 0.989, 0.989])
+# --- Données expérimentales ---
+frequences = np.array([30, 60, 100, 300, 600, 1000, 3000, 6000, 10000, 30000])  # Hz
+rapport_amplitude = np.array([0.060, 0.119, 0.194, 0.511, 0.768, 0.892, 0.973, 0.968, 0.989, 0.989])
+dephasage = np.array([1.523, 1.386, 1.2566, 0.952, 0.7616, 0.5027, 0.1508, 0.0829, 0.0471, 0.01696])  # radians
 
-# ========== i) FONCTION DE TRANSFERT ANALYTIQUE ==========
-# Pour un circuit RC passe-haut: H(jω) = jωRC / (1 + jωRC)
-# |H(jω)| = ωRC / sqrt(1 + (ωRC)²)
-# φ(ω) = 90° - arctan(ωRC)
+# Conversion en dB et en degrés
+module_dB = 20 * np.log10(rapport_amplitude)
+dephasage_deg = dephasage * 180 / np.pi
 
-# Estimation des paramètres R et C à partir des données
-# À la fréquence de coupure fc: |H| = 1/sqrt(2) ≈ 0.707
-# D'après les données, fc est entre 600 Hz et 1 kHz
+# --- Détermination approximative de la fréquence de coupure ---
+# Pour le module : point le plus proche de -3 dB
+f_c_index = np.argmin(np.abs(module_dB + 3))
+f_c_module = frequences[f_c_index]
+# Pour la phase : point le plus proche de 45°
+f_c_index_phase = np.argmin(np.abs(dephasage_deg - 45))
+f_c_phase = frequences[f_c_index_phase]
 
-# Méthode: utiliser la relation fc = 1/(2πRC)
-# Estimation grossière: fc ≈ 800 Hz
-fc_estime = 800  # Hz
-RC = 1 / (2 * np.pi * fc_estime)
+# --- Tracé Bode avec asymptotes ---
+plt.figure(figsize=(10, 8))
 
-# Valeurs nominales suggérées (à ajuster selon votre circuit)
-R = 10000  # 10 kΩ (exemple)
-C = RC / R  # Calculer C correspondant
+# Module
+plt.subplot(2, 1, 1)
+plt.semilogx(frequences, module_dB, 'o-', color='blue', label='Données expérimentales')
 
-print('='*50)
-print('PARAMÈTRES DU CIRCUIT')
-print('='*50)
-print(f'Résistance R = {R:.2f} Ω ({R/1000:.2f} kΩ)')
-print(f'Capacité C = {C:.3e} F ({C*1e6:.3f} µF)')
-print(f'Produit RC = {R*C:.3e} s')
-print(f'Fréquence de coupure théorique fc = {1/(2*np.pi*R*C):.2f} Hz')
-print()
+# Asymptotes théoriques
+# Basse fréquence : pente +20 dB/décade pour passe-haut
+plt.semilogx([frequences[0], f_c_module], [-40, -3], 'r--', label='Asymptote basse fréquence')
+# Haute fréquence : plateau à 0 dB
+plt.semilogx([f_c_module, frequences[-1]], [-3, 0], 'g--', label='Asymptote haute fréquence')
 
-# ========== ii) TRACÉ DE LA RÉPONSE EN FRÉQUENCE ==========
-# Génération de la plage de fréquences pour les courbes théoriques
-f_theo = np.logspace(1, 5, 1000)  # 10 Hz à 100 kHz
-omega = 2 * np.pi * f_theo
+# Marquage fréquence de coupure
+plt.axvline(f_c_module, color='black', linestyle=':', label=f'f_c ≈ {f_c_module} Hz (-3 dB)')
 
-# Calcul du module et de la phase (théorique)
-H_module = (omega * R * C) / np.sqrt(1 + (omega * R * C)**2)
-H_dB = 20 * np.log10(H_module)
-H_phase_deg = 90 - np.arctan(omega * R * C) * 180/np.pi
+plt.title('Diagramme de Bode - Module (dB)')
+plt.xlabel('Fréquence (Hz)')
+plt.ylabel('Module (dB)')
+plt.grid(which="both", ls="--")
+plt.legend()
 
-# Calcul des valeurs expérimentales
-Vr_Vg_exp = ch2_Vr / ch1_Vg
-Vr_Vg_exp_dB = 20 * np.log10(Vr_Vg_exp)
+# Phase
+plt.subplot(2, 1, 2)
+plt.semilogx(frequences, dephasage_deg, 'o-', color='orange', label='Données expérimentales')
 
-# Création des graphiques
-fig = plt.figure(figsize=(14, 10))
+# Asymptotes de phase pour passe-haut
+plt.semilogx([frequences[0], f_c_phase], [0, 45], 'r--', label='Asymptote basse fréquence')
+plt.semilogx([f_c_phase, frequences[-1]], [45, 90], 'g--', label='Asymptote haute fréquence')
 
-# Graphique 1: Module en dB
-ax1 = plt.subplot(2, 2, 1)
-ax1.semilogx(f_theo, H_dB, 'b-', linewidth=2, label='Théorique')
-ax1.semilogx(freq, Vr_Vg_exp_dB, 'ro', markersize=8, linewidth=2, label='Expérimental')
-ax1.axhline(-3, color='r', linestyle='--', linewidth=1.5, label='-3 dB')
-ax1.grid(True, which='both', alpha=0.3)
-ax1.set_xlabel('Fréquence (Hz)', fontsize=12)
-ax1.set_ylabel('Module |H(jω)| (dB)', fontsize=12)
-ax1.set_title('Réponse en fréquence - Module', fontsize=14, fontweight='bold')
-ax1.legend(loc='lower right')
+# Marquage fréquence à 45°
+plt.axvline(f_c_phase, color='black', linestyle=':', label=f'f_c ≈ {f_c_phase} Hz (45°)')
 
-# Graphique 2: Phase
-ax2 = plt.subplot(2, 2, 2)
-ax2.semilogx(f_theo, H_phase_deg, 'b-', linewidth=2, label='Théorique')
-ax2.axhline(45, color='r', linestyle='--', linewidth=1.5, label='45°')
-ax2.grid(True, which='both', alpha=0.3)
-ax2.set_xlabel('Fréquence (Hz)', fontsize=12)
-ax2.set_ylabel('Phase (degrés)', fontsize=12)
-ax2.set_title('Réponse en fréquence - Phase', fontsize=14, fontweight='bold')
-ax2.set_ylim([0, 100])
-ax2.legend(loc='upper right')
-
-# Graphique 3: Module linéaire
-ax3 = plt.subplot(2, 2, 3)
-ax3.semilogx(f_theo, H_module, 'b-', linewidth=2, label='Théorique')
-ax3.semilogx(freq, Vr_Vg_exp, 'ro', markersize=8, linewidth=2, label='Expérimental')
-ax3.axhline(1/np.sqrt(2), color='r', linestyle='--', linewidth=1.5, label='0.707')
-ax3.grid(True, which='both', alpha=0.3)
-ax3.set_xlabel('Fréquence (Hz)', fontsize=12)
-ax3.set_ylabel('Module |H(jω)|', fontsize=12)
-ax3.set_title('Réponse en fréquence - Module linéaire', fontsize=14, fontweight='bold')
-ax3.legend(loc='lower right')
-
-# Graphique 4: Comparaison données
-ax4 = plt.subplot(2, 2, 4)
-ax4.semilogx(freq, rapport_amp, 'go-', markersize=8, linewidth=2, label='Rapport amplitude (tableau)')
-ax4.semilogx(freq, Vr_Vg_exp, 'ro--', markersize=8, linewidth=2, label='Vr/Vg (calculé)')
-ax4.grid(True, which='both', alpha=0.3)
-ax4.set_xlabel('Fréquence (Hz)', fontsize=12)
-ax4.set_ylabel('Rapport d\'amplitude', fontsize=12)
-ax4.set_title('Comparaison des rapports Vr/Vg', fontsize=14, fontweight='bold')
-ax4.legend(loc='lower right')
+plt.title('Diagramme de Bode - Phase (°)')
+plt.xlabel('Fréquence (Hz)')
+plt.ylabel('Déphasage (°)')
+plt.grid(which="both", ls="--")
+plt.legend()
 
 plt.tight_layout()
-
-# ========== iii) ÉVALUATION DE LA FRÉQUENCE DE COUPURE ==========
-print('='*50)
-print('FRÉQUENCE DE COUPURE')
-print('='*50)
-
-# Méthode 1: À partir du module (-3 dB)
-idx_3dB = np.argmin(np.abs(H_dB - (-3)))
-fc_module = f_theo[idx_3dB]
-print(f'Fréquence de coupure (module à -3 dB): {fc_module:.2f} Hz')
-
-# Méthode 2: À partir de la phase (45°)
-idx_45deg = np.argmin(np.abs(H_phase_deg - 45))
-fc_phase = f_theo[idx_45deg]
-print(f'Fréquence de coupure (phase à 45°): {fc_phase:.2f} Hz')
-
-# Méthode 3: Théorique
-fc_theorique = 1 / (2 * np.pi * R * C)
-print(f'Fréquence de coupure théorique: {fc_theorique:.2f} Hz')
-
-# Estimation expérimentale
-print()
-print('='*50)
-print('ESTIMATION EXPÉRIMENTALE')
-print('='*50)
-
-# Trouver la fréquence où Vr/Vg ≈ 0.707
-Vr_Vg_707 = 1/np.sqrt(2)
-idx_exp = np.argmin(np.abs(Vr_Vg_exp - Vr_Vg_707))
-
-if 0 < idx_exp < len(freq) - 1:
-    # Interpolation linéaire manuelle pour meilleure précision
-    f1 = freq[idx_exp-1]
-    f2 = freq[idx_exp+1]
-    v1 = Vr_Vg_exp[idx_exp-1]
-    v2 = Vr_Vg_exp[idx_exp+1]
-    fc_exp = f1 + (f2 - f1) * (Vr_Vg_707 - v1) / (v2 - v1)
-    print(f'Fréquence de coupure expérimentale (interpolée): {fc_exp:.2f} Hz')
-else:
-    fc_exp = freq[idx_exp]
-    print(f'Fréquence de coupure expérimentale: environ {freq[idx_exp]:.0f} Hz')
-
-# Ajout des marqueurs de fréquence de coupure sur les graphiques
-ax1.axvline(fc_module, color='g', linestyle='--', linewidth=1.5, alpha=0.7)
-ax1.text(fc_module*1.2, -10, f'fc = {fc_module:.0f} Hz', 
-         fontsize=10, color='g', fontweight='bold')
-
-ax2.axvline(fc_phase, color='g', linestyle='--', linewidth=1.5, alpha=0.7)
-ax2.text(fc_phase*1.2, 55, f'fc = {fc_phase:.0f} Hz', 
-         fontsize=10, color='g', fontweight='bold')
-
-# Tableau récapitulatif
-print()
-print('='*50)
-print('TABLEAU RÉCAPITULATIF DES RÉSULTATS')
-print('='*50)
-print(f'{"Méthode":<35} {"Fréquence (Hz)":>15}')
-print('-'*50)
-print(f'{"Théorique (fc = 1/2πRC)":<35} {fc_theorique:>15.2f}')
-print(f'{"Module à -3 dB":<35} {fc_module:>15.2f}')
-print(f'{"Phase à 45°":<35} {fc_phase:>15.2f}')
-if 0 < idx_exp < len(freq) - 1:
-    print(f'{"Expérimentale (interpolée)":<35} {fc_exp:>15.2f}')
-else:
-    print(f'{"Expérimentale":<35} {fc_exp:>15.0f}')
-print('='*50)
-
-print('\nANALYSE TERMINÉE')
-print('Les graphiques sont affichés.')
-
 plt.show()
