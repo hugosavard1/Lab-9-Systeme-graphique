@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # --- Données expérimentales ---
 frequences = np.array([30, 60, 100, 300, 600, 1000, 3000, 6000, 10000, 30000])  # Hz
 rapport_amplitude = np.array([0.060, 0.119, 0.194, 0.511, 0.768, 0.892, 0.973, 0.968, 0.989, 0.989])
-dephasage = np.array([1.523, 1.386, 1.2566, 0.952, 0.7616, 0.5027, 0.1508, 0.0829, 0.0471, 0.01696])  # radians
+dephasage = np.array([1.523, 1.386, 1.2566, 1.047, 0.7616, 0.5027, 0.1508, 0.0829, 0.0471, 0.01696])  # radians
 
 # Conversion en dB et en degrés
 module_dB = 20 * np.log10(rapport_amplitude)

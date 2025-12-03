@@ -1,0 +1,88 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# --- Données expérimentales (Réutilisées) ---
+frequences = np.array([30, 60, 100, 300, 600, 1000, 3000, 6000, 10000, 30000])  # Hz
+rapport_amplitude = np.array([0.060, 0.119, 0.194, 0.511, 0.768, 0.892, 0.973, 0.968, 0.989, 0.989])
+dephasage = np.array([1.523, 1.386, 1.2566, 1.047, 0.7616, 0.5027, 0.1508, 0.0829, 0.0471, 0.01696])  # radians
+
+# Conversion en dB et en degrés
+module_dB = 20 * np.log10(rapport_amplitude)
+dephasage_deg = dephasage * 180 / np.pi
+
+# --- Fréquence de Coupure (fc) définie à 600 Hz ---
+f_c = 600.0  # Hz
+f_basse = 0.1 * f_c
+f_haute = 10 * f_c
+
+# --- Préparation du tracé des Asymptotes (Approximation à une Décade) ---
+f_min = frequences[0]
+f_max = frequences[-1]
+f_asymptote = np.logspace(np.log10(f_min), np.log10(f_max), 500)
+
+# 1. Asymptote Module (G_dB)
+# Basse fréquence (f < fc): Pente +20 dB/décade (passe par (fc, 0 dB))
+module_asymptotes = np.where(f_asymptote < f_c,
+                             20 * np.log10(f_asymptote / f_c),
+                             0)
+
+# 2. Asymptote Phase (phi_deg)
+phase_asymptotes = np.zeros_like(f_asymptote)
+# Régime 1 : f < 0.1 * fc -> +90°
+phase_asymptotes[f_asymptote < f_basse] = 90
+# Régime 3 : f > 10 * fc -> 0°
+phase_asymptotes[f_asymptote > f_haute] = 0
+# Régime 2 : 0.1 * fc < f < 10 * fc -> Pente de -45°/décade
+transition_mask = (f_asymptote >= f_basse) & (f_asymptote <= f_haute)
+# Formule: 90 - 45 * log10(f / f_basse)
+phase_asymptotes[transition_mask] = 90 - 45 * np.log10(f_asymptote[transition_mask] / f_basse)
+
+
+# --- Tracé Bode avec asymptotes ---
+plt.figure(figsize=(10, 8))
+
+# -----------------
+# 1. Module
+# -----------------
+plt.subplot(2, 1, 1)
+plt.semilogx(frequences, module_dB, 'o-', color='blue', label='Données expérimentales')
+
+# Tracé des asymptotes
+plt.semilogx(f_asymptote, module_asymptotes, 'r--', label=f'Asymptotes Théoriques (fc = {f_c:.0f} Hz)')
+
+# Marquage fréquence de coupure (vertical)
+plt.axvline(f_c, color='black', linestyle=':', linewidth=0.8)
+# Ligne de référence à -3 dB (horizontal)
+plt.axhline(-3, color='magenta', linestyle='-.', alpha=0.8, label='Point de coupure (-3 dB)')
+
+plt.title('Diagramme de Bode (Passe-Haut RC) - Module (dB)')
+plt.xlabel('Fréquence (Hz)')
+plt.ylabel('Module (dB)')
+plt.grid(which="both", ls="--")
+plt.ylim(np.min(module_dB) - 5, 5)
+plt.legend(loc='lower right', fontsize='small')
+
+# -----------------
+# 2. Phase
+# -----------------
+plt.subplot(2, 1, 2)
+plt.semilogx(frequences, dephasage_deg, 'o-', color='orange', label='Données expérimentales')
+
+# Tracé des asymptotes
+plt.semilogx(f_asymptote, phase_asymptotes, 'r--', label='Asymptotes Théoriques (Approximation à 1 Décade)')
+
+# Marquage fréquence de coupure (vertical)
+plt.axvline(f_c, color='black', linestyle=':', linewidth=0.8)
+# Ligne de référence à +45° (horizontal)
+plt.axhline(45, color='magenta', linestyle='-.', alpha=0.8, label='Point de coupure (+45°)')
+
+
+plt.title('Diagramme de Bode (Passe-Haut RC) - Phase (°)')
+plt.xlabel('Fréquence (Hz)')
+plt.ylabel('Déphasage (°)')
+plt.grid(which="both", ls="--")
+plt.yticks(np.arange(0, 91, 15))
+plt.legend(loc='upper right', fontsize='small')
+
+plt.tight_layout()
+plt.show()
