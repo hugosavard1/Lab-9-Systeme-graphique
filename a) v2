@@ -45,17 +45,17 @@ plt.figure(figsize=(10, 8))
 # 1. Module
 # -----------------
 plt.subplot(2, 1, 1)
-plt.semilogx(frequences, module_dB, 'o-', color='blue', label='Données expérimentales')
+plt.semilogx(frequences, module_dB, 'o-', color='blue', label='Valeurs expérimentales')
 
 # Tracé des asymptotes
-plt.semilogx(f_asymptote, module_asymptotes, 'r--', label=f'Asymptotes Théoriques (fc = {f_c:.0f} Hz)')
+plt.semilogx(f_asymptote, module_asymptotes, 'r--', label=f'Asymptotes (fc = {f_c:.0f} Hz)')
 
 # Marquage fréquence de coupure (vertical)
 plt.axvline(f_c, color='black', linestyle=':', linewidth=0.8)
 # Ligne de référence à -3 dB (horizontal)
 plt.axhline(-3, color='magenta', linestyle='-.', alpha=0.8, label='Point de coupure (-3 dB)')
 
-plt.title('Diagramme de Bode (Passe-Haut RC) - Module (dB)')
+plt.title('Diagramme de Bode module (dB)')
 plt.xlabel('Fréquence (Hz)')
 plt.ylabel('Module (dB)')
 plt.grid(which="both", ls="--")
@@ -66,10 +66,10 @@ plt.legend(loc='lower right', fontsize='small')
 # 2. Phase
 # -----------------
 plt.subplot(2, 1, 2)
-plt.semilogx(frequences, dephasage_deg, 'o-', color='orange', label='Données expérimentales')
+plt.semilogx(frequences, dephasage_deg, 'o-', color='orange', label='Valeurs expérimentales')
 
 # Tracé des asymptotes
-plt.semilogx(f_asymptote, phase_asymptotes, 'r--', label='Asymptotes Théoriques (Approximation à 1 Décade)')
+plt.semilogx(f_asymptote, phase_asymptotes, 'r--', label='Asymptotes')
 
 # Marquage fréquence de coupure (vertical)
 plt.axvline(f_c, color='black', linestyle=':', linewidth=0.8)
@@ -77,7 +77,7 @@ plt.axvline(f_c, color='black', linestyle=':', linewidth=0.8)
 plt.axhline(45, color='magenta', linestyle='-.', alpha=0.8, label='Point de coupure (+45°)')
 
 
-plt.title('Diagramme de Bode (Passe-Haut RC) - Phase (°)')
+plt.title('Diagramme de Bode phase (°)')
 plt.xlabel('Fréquence (Hz)')
 plt.ylabel('Déphasage (°)')
 plt.grid(which="both", ls="--")

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # --- 1. Paramètres du Circuit RLC (inchangés, R est la résistance interne RL) ---
-L = 36.28e-3  
+L = 36.58e-3  
 C = 0.1e-6 
 R = 100    # Résistance interne RL de l'inductance, utilisée pour le calcul du Q
 
@@ -55,17 +55,16 @@ plt.figure(figsize=(12, 10))
 
 # --- Tracé du Module (dB) vs Fréquence (Log) ---
 plt.subplot(2, 1, 1)
-plt.semilogx(f, module_H_dB, color='blue', label=r'Courbe réelle $|V_C / V_g|$')
-plt.semilogx(f, asymptote_dB, color='red', linestyle='--', linewidth=1.5, label='Asymptotes (0 dB / -40 dB/décade)')
+plt.semilogx(f, module_H_dB, color='blue', label=r' $|V_C / V_g|$')
+plt.semilogx(f, asymptote_dB, color='red', linestyle='--', linewidth=1.5, label='Asymptotes')
 
-plt.title('Diagramme de Bode - Module du Filtre RLC Passe-Bas')
+plt.title('Diagramme de Bode module circuit RLC Passe-Bas')
 plt.xlabel(r'Fréquence $f$ (Hz)')
 plt.ylabel('Module (dB)')
 plt.grid(which="both", ls="--", alpha=0.7)
 
 # Lignes de référence
 plt.axvline(x=f_0, color='red', linestyle=':', label=f'$f_0$ = {f_0:.2f} Hz')
-plt.axhline(y=0, color='gray', linestyle=':', label='Gain asymptotique (0 dB)')
 # Note: L'atténuation à -3 dB se produit à la fréquence de coupure f_c
 
 plt.legend(loc='lower left')
@@ -74,18 +73,16 @@ plt.ylim([-50, 20])
 
 # --- Tracé de la Phase (Degrés) vs Fréquence (Log) ---
 plt.subplot(2, 1, 2)
-plt.semilogx(f, phase_H, color='orange', label=r'Phase réelle $\phi(V_C) - \phi(V_g)$')
-plt.semilogx(f, phase_asymptote, color='red', linestyle='--', linewidth=1.5, label='Asymptotes (0° / Transition Verticale / -180°)')
+plt.semilogx(f, phase_H, color='orange', label=r'Phase $\phi(V_C) - \phi(V_g)$')
+plt.semilogx(f, phase_asymptote, color='red', linestyle='--', linewidth=1.5, label='Asymptotes')
 
-plt.title('Diagramme de Bode - Phase du Filtre RLC Passe-Bas')
+plt.title('Diagramme de Bode phase circuit RLC Passe-Bas')
 plt.xlabel(r'Fréquence $f$ (Hz)')
 plt.ylabel('Déphasage (Degrés)')
 plt.grid(which="both", ls="--", alpha=0.7)
 
 # Lignes de référence de phase
 plt.axvline(x=f_0, color='red', linestyle=':', label=f'$f_0$ = {f_0:.2f} Hz')
-plt.axhline(y=0, color='gray', linestyle=':', label='$0^{\\circ}$ (Asymptote B.F.)')
-plt.axhline(y=-180, color='gray', linestyle=':', label='$-180^{\\circ}$ (Asymptote H.F.)')
 plt.axhline(y=-90, color='magenta', linestyle='-.', alpha=0.8, label=r'$-90^{\circ}$ (à $f_0$)')
 
 plt.legend(loc='lower left')

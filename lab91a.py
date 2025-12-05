@@ -48,28 +48,27 @@ plt.figure(figsize=(12, 10))
 # --- Tracé du Module (dB) vs Fréquence (Log) ---
 plt.subplot(2, 1, 1)
 # Utilisation de chaînes brutes r'' pour éviter les avertissements LaTeX
-plt.semilogx(f, module_H_dB, color='blue', label=r'Module réel $|H(j\omega)|$')
-plt.semilogx(f, asymptote_dB, color='blue', linestyle='--', linewidth=1.5, label='Asymptote (Approximation)')
+plt.semilogx(f, module_H_dB, color='blue', label=r'Module $|H(j\omega)|$')
+plt.semilogx(f, asymptote_dB, color='blue', linestyle='--', linewidth=1.5, label='Asymptotes')
 
-plt.title('Diagramme de Bode - Filtre Passe-Haut RC')
+plt.title('Diagramme de Bode module circuit RC passe-haut')
 plt.xlabel(r'Fréquence $f$ (Hz)')
 plt.ylabel('Module (dB)')
 plt.grid(which="both", ls="--", alpha=0.7)
 
 plt.axvline(x=f_c, color='red', linestyle='--', label=f'Fréquence de coupure $f_c$ = {f_c:.2f} Hz')
 plt.axhline(y=valeur_a_coupe_dB, color='green', linestyle=':', label='-3 dB')
-plt.axhline(y=0, color='gray', linestyle=':', label='Asymptote haute fréquence (0 dB)')
 plt.legend(loc='lower left')
 plt.ylim(np.min(module_H_dB) - 5, 5)
 
 # --- Tracé de la Phase (Degrés) vs Fréquence (Log) ---
 plt.subplot(2, 1, 2)
-plt.semilogx(f, phase_H, color='orange', label=r'Phase réelle $\angle H(j\omega)$')
+plt.semilogx(f, phase_H, color='orange', label=r'Phase $\angle H(j\omega)$')
 
 # Ajout de l'asymptote de la phase (la ligne noire brisée)
-plt.semilogx(f, phase_asymptote, color='orange', linestyle='--', linewidth=1.5, label='Asymptote de phase')
+plt.semilogx(f, phase_asymptote, color='orange', linestyle='--', linewidth=1.5, label='Asymptote')
 
-plt.title('Diagramme de Bode - Phase')
+plt.title('Diagramme de Bode phase circuit RC passe-haut')
 plt.xlabel(r'Fréquence $f$ (Hz)')
 plt.ylabel('Déphasage (Degrés)')
 plt.grid(which="both", ls="--", alpha=0.7)
@@ -78,8 +77,6 @@ plt.axvline(x=f_c, color='red', linestyle='--', label=f'$f_c$ = {f_c:.2f} Hz')
 plt.axhline(y=45, color='green', linestyle=':', label=r'$45^{\circ}$ (à $f_c$)')
 
 # Lignes de référence des plateaux
-plt.axhline(y=90, color='gray', linestyle=':', label=r'$90^{\circ}$ (Asymptote B.F.)')
-plt.axhline(y=0, color='gray', linestyle=':', label=r'$0^{\circ}$ (Asymptote H.F.)')
 
 plt.legend(loc='lower left')
 plt.yticks(np.arange(0, 91, 15))
