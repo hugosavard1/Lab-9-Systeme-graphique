@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 frequences_rlc = np.array([30, 60, 100, 300, 600, 1000, 1500, 2000, 2500, 2800, 3000, 3200, 3500, 3700, 4000, 5000, 6000, 10000, 30000])  # Hz
 rapport_amplitude_rlc = np.array([0.990, 0.990, 0.990, 1, 1.031, 1.094, 1.245, 1.546, 2.484, 5.253, 17.639, 8.132, 3.674, 2.609, 1.766, 0.771, 0.423, 0.194, 0.127])
 # J'utilise les données de phase ajustées par le code précédent (tend vers le négatif)
-dephasage_rlc = np.array([0, 0, 0, 0, 0, 0, 0, 0, -0.0785, -0.176, -1.602, -2.614, -2.969, -3.101, -3.101, -3.1416, -3.1416, -3.1416, -3.1416 ])  # radians
+dephasage_rlc = np.array([0, 0, 0, 0, 0, 0, 0, 0, -0.0785, -0.176, -1.602, -2.614, -2.969, -3., -3.101, -3.1416, -3.1416, -3.1416, -3.1416 ])  # radians
 
 # Conversion en dB et en degrés
 module_dB_rlc = 20 * np.log10(rapport_amplitude_rlc)
