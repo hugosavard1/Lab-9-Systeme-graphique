@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # --- 1. Paramètres du Circuit RLC (inchangés, R est la résistance interne RL) ---
-L = 27e-3  
+L = 36.28e-3  
 C = 0.1e-6 
 R = 100    # Résistance interne RL de l'inductance, utilisée pour le calcul du Q
 
