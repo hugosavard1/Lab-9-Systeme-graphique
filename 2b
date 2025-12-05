@@ -42,15 +42,14 @@ plt.figure(figsize=(12, 10))
 # 1. Module
 # -----------------
 plt.subplot(2, 1, 1)
-plt.semilogx(frequences_rlc, module_dB_rlc, 'o-', color='blue', label='Données expérimentales')
-plt.semilogx(f_asymptote, module_asymptotes_rlc, 'r--', label=f'Asymptotes (0 dB / -40 dB/décade)')
-plt.title('Diagramme de Bode (Passe-Bas RLC) - Module (dB)')
+plt.semilogx(frequences_rlc, module_dB_rlc, 'o-', color='blue', label='Valeurs expérimentales')
+plt.semilogx(f_asymptote, module_asymptotes_rlc, 'r--', label=f'Asymptotes')
+plt.title('Diagramme de Bode - Module (dB)')
 plt.xlabel('Fréquence (Hz)')
 plt.ylabel('Module (dB)')
 plt.grid(which="both", ls="--")
 plt.axvline(f_0, color='red', linestyle=':', linewidth=0.8, label=f'$f_0$ = {f_0:.0f} Hz')
 plt.axhline(G_c_dB, color='magenta', linestyle='-.', alpha=0.8, label=f'Point de coupure ({G_c_dB:.2f} dB)')
-plt.axhline(0, color='gray', linestyle=':', alpha=0.8, label='Gain asymptotique (0 dB)')
 plt.xlim(f_min_plot, f_max_plot) 
 plt.ylim(np.min(module_dB_rlc) - 5, G_max_dB + 5)
 plt.legend(loc='lower left', fontsize='small')
@@ -59,20 +58,18 @@ plt.legend(loc='lower left', fontsize='small')
 # 2. Phase
 # -----------------
 plt.subplot(2, 1, 2)
-plt.semilogx(frequences_rlc, dephasage_deg_rlc, 'o-', color='orange', label='Données expérimentales')
+plt.semilogx(frequences_rlc, dephasage_deg_rlc, 'o-', color='orange', label='Valeurs expérimentales')
 
 # Tracé des asymptotes (MAINTENANT VERTICALES)
-plt.semilogx(f_asymptote, phase_asymptotes_rlc, 'r--', label='Asymptotes (0° / Transition Verticale / -180°)')
+plt.semilogx(f_asymptote, phase_asymptotes_rlc, 'r--', label='Asymptotes')
 
-plt.title('Diagramme de Bode (Passe-Bas RLC) - Phase (°)')
+plt.title('Diagramme de Bode - Phase (°)')
 plt.xlabel('Fréquence (Hz)')
 plt.ylabel('Déphasage (°)')
 plt.grid(which="both", ls="--")
 
 # Lignes de référence de phase
 plt.axvline(f_0, color='red', linestyle=':', linewidth=0.8) # Cette ligne matérialise la transition verticale
-plt.axhline(0, color='blue', linestyle=':', alpha=0.8, label=r'$0^{\circ}$ (Asymptote B.F.)')
-plt.axhline(-180, color='gray', linestyle=':', alpha=0.8, label=r'$-180^{\circ}$ (Asymptote H.F.)')
 plt.axhline(-90, color='magenta', linestyle='-.', alpha=0.8, label=r'$-90^{\circ}$ (à $f_0$)')
 
 plt.xlim(f_min_plot, f_max_plot)
